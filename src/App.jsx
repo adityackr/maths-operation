@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import shortid from 'shortid';
+import History from './components/history/History';
 import InputSection from './components/inputs/InputSection';
 import Operations from './components/operations/Operations';
 
@@ -10,6 +12,8 @@ const initialInputState = {
 const App = () => {
 	const [inputs, setInputs] = useState({ ...initialInputState });
 	const [result, setResult] = useState(0);
+	const [historyItems, setHistoryItems] = useState([]);
+	const [restored, setRestored] = useState(null);
 
 	const handleInputChange = (e) => {
 		setInputs({ ...inputs, [e.target.name]: parseInt(e.target.value) });
@@ -26,9 +30,29 @@ const App = () => {
 			return;
 		}
 
-		const res = eval(`${inputs.a} ${operator} ${inputs.b}`);
+		const result = eval(`${inputs.a} ${operator} ${inputs.b}`);
+		setResult(result);
 
-		setResult(res);
+		const history = {
+			id: shortid.generate(),
+			inputs: { ...inputs },
+			operator,
+			result,
+		};
+
+		setHistoryItems([history, ...historyItems]);
+	};
+
+	const handleRestoreButton = (historyItem) => {
+		setInputs({ ...historyItem.inputs });
+		setResult(historyItem.result);
+		setRestored(historyItem.id);
+	};
+
+	const handleDeleteButton = (historyItem) => {
+		const index = historyItems.findIndex((item) => item.id === historyItem.id);
+		historyItems.splice(index, 1);
+		setHistoryItems([...historyItems]);
 	};
 	return (
 		<div
@@ -51,6 +75,13 @@ const App = () => {
 			<div>
 				<h3>Result: {result}</h3>
 			</div>
+
+			<History
+				historyItems={historyItems}
+				handleRestoreButton={handleRestoreButton}
+				handleDeleteButton={handleDeleteButton}
+				restored={restored}
+			/>
 		</div>
 	);
 };

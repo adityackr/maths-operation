@@ -9,9 +9,10 @@ const Button = ({ text, onClick, disabled }) => {
 
 	const style = {
 		border: 'none',
+		borderRadius: '0.25rem',
 		backgroundColor: '#ddd',
 		cursor: 'pointer',
-		padding: '0.25rem 1rem',
+		padding: '0.25rem 0.75rem',
 		fontWeight: 'bold',
 		...(disabled && disabledStyle),
 	};
